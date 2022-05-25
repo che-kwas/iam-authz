@@ -1,5 +1,4 @@
-// The IAM API server manages the api objects including users, policies, secrets and more.
-
+// iam-auth is responsible for serving the ladon authorization request.
 package main
 
 import (
