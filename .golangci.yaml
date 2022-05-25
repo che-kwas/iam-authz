@@ -1,0 +1,7 @@
+run:
+  skip-files:
+    - _test.go
+lll:
+  line-length: 120
+linters:
+  fast: true
