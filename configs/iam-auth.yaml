@@ -1,30 +1,24 @@
 http:
-  addr: 0.0.0.0:8000 # 默认 0.0.0.0:8000
+  addr: 0.0.0.0:8010 # 默认 0.0.0.0:8000
   mode: debug # release, debug, test，默认 release
   healthz: true # 是否开启健康检查, router: /healthz，默认 true
   metrics: false # 是否开启 metrics, router: /metrics，默认 false
   profiling: false # 是否开启性能分析, router: /debug/pprof，默认 false
   ping-timeout: 10s # http 服务启动后，自检超时时间，默认 10s
 
-grpc:
-  addr: 0.0.0.0:8001 # 默认 0.0.0.0:8001
-  max-msg-size: 4194304 # 4mb
-
-jwt:
-  key: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo # 服务端密钥
-  timeout: 24h # token 过期时间(小时), 默认24h
-  max-refresh: 24h # token 更新时间(小时), 默认24h
-
-mysql:
-  addr: 127.0.0.1:3306 # 默认 127.0.0.1:3306
-  username: che
-  password: "774411"
-  database: iam
-  max-idle-conns: 100 # MySQL 最大空闲连接数，默认 100
-  max-open-conns: 100 # MySQL 最大打开的连接数，默认 100
-  max-conn-life-time: 10s # 空闲连接最大存活时间，默认 10s
+apiserver: 0.0.0.0:8001 # apiserver grpc地址
 
 redis:
-  addrs: ["127.0.0.1:6379"] # 1个addr为单节点模式，多个addrs为cluster模式
+  addrs:
+    - "127.0.0.1:6379" # 1个addr为单节点模式，多个addrs为cluster模式
   password: "774411"
-  database: 1
+  database: 0
+
+log:
+  level: debug # 日志级别，debug, info, warn, error, dpanic, panic, fatal
+  encoding: console # 输出格式，console, json
+  disable-caller: true # 输出日志时是否关闭调用日志的文件和行号
+  output-path: /var/log/iam-auth/iam-auth.log
+  max-size: 100 # mb，日志文件最大值，超过此值会被rotated
+  max-age: 30 # days，历史日志文件保留天数
+  max-backups: 30 # 最大历史日志文件数

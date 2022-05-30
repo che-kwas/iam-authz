@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 
 var (
 	name = "iam-auth"
-	cfg  = pflag.StringP("config", "c", "./iam-auth.yaml", "config file")
+	cfg  = pflag.StringP("config", "c", "", "config file")
 	help = pflag.BoolP("help", "h", false, "show help message")
 )
 
@@ -28,7 +27,7 @@ func main() {
 	}
 
 	if err := config.LoadConfig(*cfg, name); err != nil {
-		log.Fatal("Failed to load configuration: ", err)
+		panic(err)
 	}
 
 	fmt.Printf("Hello %s\n", name)

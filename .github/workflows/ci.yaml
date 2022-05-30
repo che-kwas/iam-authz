@@ -18,4 +18,5 @@ jobs:
           go-version: 1.17
 
       - name: Make
-        run: make all
+        # run: make all
+        run: echo "TODO"

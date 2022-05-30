@@ -3,7 +3,7 @@ module iam-auth
 go 1.17
 
 require (
-	github.com/che-kwas/iam-kit v0.1.8
+	github.com/che-kwas/iam-kit v0.2.0
 	github.com/spf13/pflag v1.0.5
 )
 
@@ -25,3 +25,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+
+replace github.com/che-kwas/iam-kit => ../iam-kit
