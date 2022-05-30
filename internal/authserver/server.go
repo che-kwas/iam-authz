@@ -1,4 +1,4 @@
-package apiserver
+package authserver
 
 import (
 	"github.com/che-kwas/iam-kit/logger"
