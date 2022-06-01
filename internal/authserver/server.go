@@ -1,6 +1,8 @@
 package authserver
 
 import (
+	"iam-auth/internal/authserver/store"
+
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/che-kwas/iam-kit/server"
 )
@@ -20,12 +22,13 @@ func NewServer(name string) *authServer {
 		log:  logger.L(),
 	}
 
-	return s.initStore().newServer().registerRouter()
+	return s.initStore().newServer().setupHTTP()
 }
 
 // Run runs the authServer.
 func (s *authServer) Run() {
-	s.log.Sync()
+	defer s.log.Sync()
+	defer store.Client().Close()
 
 	if s.err != nil {
 		s.log.Fatal("failed to build the server: ", s.err)
@@ -49,7 +52,7 @@ func (s *authServer) newServer() *authServer {
 	return s
 }
 
-func (s *authServer) registerRouter() *authServer {
+func (s *authServer) setupHTTP() *authServer {
 	if s.err != nil {
 		return s
 	}
