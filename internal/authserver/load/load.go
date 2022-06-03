@@ -4,7 +4,6 @@ package load
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/che-kwas/iam-kit/logger"
@@ -31,7 +30,6 @@ type Loadable interface {
 // Loader is used to do reload.
 type Loader struct {
 	ctx    context.Context
-	lock   *sync.RWMutex
 	loader Loadable
 	log    *logger.Logger
 }
@@ -40,7 +38,6 @@ type Loader struct {
 func NewLoader(ctx context.Context, loaderImpl Loadable) *Loader {
 	return &Loader{
 		ctx:    ctx,
-		lock:   new(sync.RWMutex),
 		loader: loaderImpl,
 		log:    logger.L(),
 	}
@@ -84,9 +81,6 @@ func (l *Loader) startTimerLoop() {
 }
 
 func (l *Loader) reloadAll() {
-	l.lock.Lock()
-	defer l.lock.Unlock()
-
 	if err := l.loader.ReloadSecrets(); err != nil {
 		l.log.Errorf("faild to reload secrets: %s", err.Error())
 	}
@@ -96,9 +90,6 @@ func (l *Loader) reloadAll() {
 }
 
 func (l *Loader) reload(event string) {
-	l.lock.Lock()
-	defer l.lock.Unlock()
-
 	switch event {
 	case eventSecretChanged:
 		if err := l.loader.ReloadSecrets(); err != nil {
