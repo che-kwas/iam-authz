@@ -39,7 +39,8 @@ func (p *policies) List() (map[string][]*ladon.DefaultPolicy, error) {
 		}, retry.Attempts(3),
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "list policies failed")
+		p.log.Errorf("failed to list policies: %s", err.Error())
+		return nil, errors.Wrap(err, "failed to list policies")
 	}
 
 	total := len(resp.Items)

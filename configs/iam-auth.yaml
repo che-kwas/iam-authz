@@ -1,3 +1,7 @@
+main:
+  apiserver: 0.0.0.0:8001 # apiserver grpc地址
+  reload-interval: 30s # 当没有收到apiserver的事件变更通知时，重新加载数据的间隔
+
 http:
   addr: 0.0.0.0:8010 # 默认 0.0.0.0:8000
   mode: debug # release, debug, test，默认 release
@@ -5,8 +9,6 @@ http:
   metrics: false # 是否开启 metrics, router: /metrics，默认 false
   profiling: false # 是否开启性能分析, router: /debug/pprof，默认 false
   ping-timeout: 10s # http 服务启动后，自检超时时间，默认 10s
-
-apiserver: 0.0.0.0:8001 # apiserver grpc地址
 
 redis:
   addrs:

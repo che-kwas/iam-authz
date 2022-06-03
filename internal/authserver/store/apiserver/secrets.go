@@ -36,7 +36,8 @@ func (s *secrets) List() (map[string]*pb.SecretInfo, error) {
 		}, retry.Attempts(3),
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "list secrets failed")
+		s.log.Errorf("failed to list secrets: %s", err.Error())
+		return nil, errors.Wrap(err, "failed to list secrets")
 	}
 
 	total := len(resp.Items)
