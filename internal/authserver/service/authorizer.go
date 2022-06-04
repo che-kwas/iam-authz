@@ -12,7 +12,7 @@ type Authorizer struct {
 	warden ladon.Warden
 }
 
-// NewAuthorizer creates a local repository authorizer.
+// NewAuthorizer creates a authorizer.
 func NewAuthorizer() *Authorizer {
 	return &Authorizer{
 		warden: &ladon.Ladon{

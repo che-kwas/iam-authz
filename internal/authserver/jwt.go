@@ -4,7 +4,7 @@ import (
 	"github.com/che-kwas/iam-kit/middleware"
 	"github.com/che-kwas/iam-kit/middleware/auth"
 
-	"iam-auth/internal/authserver/load/cache"
+	"iam-auth/internal/authserver/cache"
 )
 
 func newJWTExAuth() middleware.AuthStrategy {

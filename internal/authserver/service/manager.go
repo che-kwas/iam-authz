@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/ory/ladon"
 
-	"iam-auth/internal/authserver/load/cache"
+	"iam-auth/internal/authserver/cache"
 )
 
 // PolicyManager implements the ladon.Manager interface.

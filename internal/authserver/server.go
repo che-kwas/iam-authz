@@ -2,14 +2,15 @@ package authserver
 
 import (
 	"context"
-	"iam-auth/internal/authserver/load"
-	"iam-auth/internal/authserver/load/cache"
-	"iam-auth/internal/authserver/store"
-	"iam-auth/internal/authserver/store/apiserver"
 
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/che-kwas/iam-kit/server"
 	"github.com/spf13/viper"
+
+	"iam-auth/internal/authserver/cache"
+	"iam-auth/internal/authserver/load"
+	"iam-auth/internal/authserver/store"
+	"iam-auth/internal/authserver/store/apiserver"
 )
 
 type authServer struct {

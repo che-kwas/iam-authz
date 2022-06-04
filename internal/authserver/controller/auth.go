@@ -1,5 +1,5 @@
-// Package auth is the auth controller.
-package auth
+// Package controller defines the controllers.
+package controller
 
 import (
 	basecode "github.com/che-kwas/iam-kit/code"

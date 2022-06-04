@@ -9,7 +9,6 @@ import (
 	"github.com/ory/ladon"
 
 	pb "iam-auth/api/apiserver/proto/v1"
-	"iam-auth/internal/authserver/load"
 	"iam-auth/internal/authserver/store"
 )
 
@@ -19,8 +18,6 @@ type Cache struct {
 	secrets  *ristretto.Cache
 	policies *ristretto.Cache
 }
-
-var _ load.Loadable = &Cache{}
 
 const (
 	secretSize = unsafe.Sizeof(pb.SecretInfo{})
