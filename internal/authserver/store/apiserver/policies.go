@@ -23,7 +23,7 @@ func newPolicies(ds *datastore) *policies {
 
 // List returns all policies.
 func (p *policies) List() (map[string][]*ladon.DefaultPolicy, error) {
-	p.log.Info("loading policies")
+	p.log.Info("list policies")
 
 	req := &pb.ListPoliciesRequest{Offset: 0, Limit: -1}
 	var resp *pb.ListPoliciesResponse
