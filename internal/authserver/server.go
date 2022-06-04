@@ -94,5 +94,6 @@ func (s *authServer) setupHTTP() *authServer {
 		return s
 	}
 
+	initRouter(s.Server.HTTPServer.Engine)
 	return s
 }

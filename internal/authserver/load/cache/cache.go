@@ -89,12 +89,12 @@ func (c *Cache) GetSecret(key string) (*pb.SecretInfo, error) {
 	return value.(*pb.SecretInfo), nil
 }
 
-// GetPolicy returns user's ladon policies for the given user.
-func (c *Cache) GetPolicy(key string) ([]*ladon.DefaultPolicy, error) {
+// ListPolicies returns user's ladon policies for the given user.
+func (c *Cache) ListPolicies(username string) ([]*ladon.DefaultPolicy, error) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	value, ok := c.policies.Get(key)
+	value, ok := c.policies.Get(username)
 	if !ok {
 		return nil, ErrPolicyNotFound
 	}
