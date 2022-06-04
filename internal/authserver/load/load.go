@@ -48,7 +48,9 @@ func (l *Loader) Start() {
 	// reload when event is received
 	go l.startEventLoop()
 	// reload when timer ticks
-	l.startTimerLoop()
+	go l.startTimerLoop()
+
+	l.reloadAll()
 }
 
 func (l *Loader) startEventLoop() {

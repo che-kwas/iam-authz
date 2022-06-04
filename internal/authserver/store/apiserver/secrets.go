@@ -41,7 +41,7 @@ func (s *secrets) List() (map[string]*pb.SecretInfo, error) {
 	}
 
 	total := len(resp.Items)
-	s.log.Infof("secrets found %d total:", total)
+	s.log.Infof("secrets found %d total", total)
 
 	secrets := make(map[string]*pb.SecretInfo, total)
 	for _, v := range resp.Items {

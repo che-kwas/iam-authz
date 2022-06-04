@@ -2,12 +2,13 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/che-kwas/iam-kit/config"
 	"github.com/spf13/pflag"
+
+	"iam-auth/internal/authserver"
 )
 
 var (
@@ -30,5 +31,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Hello %s\n", name)
+	authserver.NewServer(name).Run()
 }
