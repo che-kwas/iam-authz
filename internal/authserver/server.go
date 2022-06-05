@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 
 	"iam-auth/internal/authserver/cache"
-	"iam-auth/internal/authserver/load"
 	"iam-auth/internal/authserver/store"
 	"iam-auth/internal/authserver/store/apiserver"
 )
@@ -34,7 +33,7 @@ func NewServer(name string) *authServer {
 		log:    logger.L(),
 	}
 
-	return s.initStore().initLoader().newServer().setupHTTP()
+	return s.initStore().initCache().newServer().setupHTTP()
 }
 
 // Run runs the authServer.
@@ -67,16 +66,16 @@ func (s *authServer) initStore() *authServer {
 	return s
 }
 
-func (s *authServer) initLoader() *authServer {
+func (s *authServer) initCache() *authServer {
 	if s.err != nil {
 		return s
 	}
 
-	var loaderImpl load.Loadable
-	if loaderImpl, s.err = cache.CacheIns(); s.err != nil {
+	var cacheIns cache.Loadable
+	if cacheIns, s.err = cache.CacheIns(); s.err != nil {
 		return s
 	}
-	load.NewLoader(s.ctx, loaderImpl).Start()
+	cache.NewLoader(s.ctx, cacheIns).Start()
 
 	return s
 }

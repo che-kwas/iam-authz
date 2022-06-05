@@ -1,6 +1,4 @@
-// Package load subscribes to PolicyChanged/SecretChanged events
-// and reloads data when changes occur.
-package load
+package cache
 
 import (
 	"context"

@@ -19,6 +19,8 @@ type Cache struct {
 	policies *ristretto.Cache
 }
 
+var _ Loadable = &Cache{}
+
 const (
 	secretSize = unsafe.Sizeof(pb.SecretInfo{})
 	policySize = unsafe.Sizeof(pb.PolicyInfo{})
