@@ -21,10 +21,10 @@ func NewAuditLogger() *AuditLogger {
 
 // LogRejectedAccessRequest write rejected subject access to log.
 func (a *AuditLogger) LogRejectedAccessRequest(r *ladon.Request, p ladon.Policies, d ladon.Policies) {
-	a.log.Debug("TODO")
+	a.log.Debugw("access request rejected", "request", r, "deciders", d)
 }
 
 // LogGrantedAccessRequest write granted subject access to log.
 func (a *AuditLogger) LogGrantedAccessRequest(r *ladon.Request, p ladon.Policies, d ladon.Policies) {
-	a.log.Debug("TODO")
+	a.log.Debugw("access request granted", "request", r, "deciders", d)
 }
