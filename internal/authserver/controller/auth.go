@@ -29,14 +29,12 @@ func NewAuthController() *AuthController {
 // Authorize returns whether a request is allow or deny to access a resource
 // and do some action under specified condition.
 func (a *AuthController) Authorize(c *gin.Context) {
-	a.log.X(c).Info("authorize")
-
 	var req ladon.Request
 	if err := c.ShouldBindJSON(&req); err != nil {
 		httputil.WriteResponse(c, errors.WithCode(basecode.ErrBadParams, err.Error()), nil)
 		return
 	}
-	a.log.Debugf("authorize params: %+v", req)
+	a.log.X(c).Infow("authorize params", "request", req)
 
 	if req.Context == nil {
 		req.Context = ladon.Context{}

@@ -1,6 +1,5 @@
 main:
   apiserver: 0.0.0.0:8001 # apiserver grpc地址
-  reload-interval: 30s # 当没有收到apiserver的事件变更通知时，重新加载数据的间隔
 
 http:
   addr: 0.0.0.0:8010 # 默认 0.0.0.0:8000
@@ -16,11 +15,7 @@ redis:
   password: "774411"
   database: 0
 
+# https://pkg.go.dev/go.uber.org/zap#hdr-Configuring_Zap
 log:
-  level: debug # 日志级别，debug, info, warn, error, dpanic, panic, fatal
-  encoding: console # 输出格式，console, json
-  disable-caller: true # 输出日志时是否关闭调用日志的文件和行号
-  output-path: /var/log/iam-auth/iam-auth.log
-  max-size: 100 # mb，日志文件最大值，超过此值会被rotated
-  max-age: 30 # days，历史日志文件保留天数
-  max-backups: 30 # 最大历史日志文件数
+  development: true
+  disable-caller: true

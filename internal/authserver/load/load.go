@@ -4,10 +4,8 @@ package load
 
 import (
 	"context"
-	"time"
 
 	"github.com/che-kwas/iam-kit/logger"
-	"github.com/spf13/viper"
 
 	"iam-auth/internal/pkg/redis"
 )
@@ -17,8 +15,6 @@ const (
 	channel            = "iam.notifications"
 	eventPolicyChanged = "PolicyChanged"
 	eventSecretChanged = "SecretChanged"
-
-	defaultReloadInterval = time.Duration(30 * time.Second)
 )
 
 // Loadable defines the behavior of a loader.
@@ -45,10 +41,7 @@ func NewLoader(ctx context.Context, loaderImpl Loadable) *Loader {
 
 // Start starts a reloading loop.
 func (l *Loader) Start() {
-	// reload when event is received
 	go l.startEventLoop()
-	// reload when timer ticks
-	go l.startTimerLoop()
 
 	l.reloadAll()
 }
@@ -61,23 +54,6 @@ func (l *Loader) startEventLoop() {
 	for {
 		for msg := range ch {
 			l.reload(msg.Payload)
-		}
-	}
-}
-
-func (l *Loader) startTimerLoop() {
-	var interval time.Duration
-	if err := viper.UnmarshalKey("main.reload-interval", &interval); err != nil {
-		interval = defaultReloadInterval
-	}
-	ticker := time.NewTicker(interval)
-
-	for {
-		select {
-		case <-l.ctx.Done():
-			return
-		case <-ticker.C:
-			l.reloadAll()
 		}
 	}
 }
