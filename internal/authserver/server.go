@@ -53,7 +53,7 @@ func (s *authServer) Run() {
 
 func (s *authServer) initStore() *authServer {
 	var addr string
-	if s.err = viper.UnmarshalKey("main.apiserver", &addr); s.err != nil {
+	if s.err = viper.UnmarshalKey("apiserver.addr", &addr); s.err != nil {
 		return s
 	}
 
