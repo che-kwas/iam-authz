@@ -5,8 +5,10 @@ import (
 
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/che-kwas/iam-kit/server"
+	"github.com/che-kwas/iam-kit/shutdown"
 	"github.com/spf13/viper"
 
+	"iam-auth/internal/authserver/auditor"
 	"iam-auth/internal/authserver/cache"
 	"iam-auth/internal/authserver/store"
 	"iam-auth/internal/authserver/store/apiserver"
@@ -14,10 +16,11 @@ import (
 
 type authServer struct {
 	*server.Server
-	name   string
-	ctx    context.Context
-	cancel context.CancelFunc
-	log    *logger.Logger
+	name      string
+	ctx       context.Context
+	cancel    context.CancelFunc
+	auditOpts *auditor.AuditorOptions
+	log       *logger.Logger
 
 	err error
 }
@@ -27,13 +30,18 @@ func NewServer(name string) *authServer {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	s := &authServer{
-		name:   name,
-		ctx:    ctx,
-		cancel: cancel,
-		log:    logger.L(),
+		name:      name,
+		ctx:       ctx,
+		cancel:    cancel,
+		auditOpts: auditor.NewAuditorOptions(),
+		log:       logger.L(),
 	}
 
-	return s.initStore().initCache().newServer().setupHTTP()
+	return s.initStore().
+		initCache().
+		initAudit().
+		newServer().
+		setupHTTP()
 }
 
 // Run runs the authServer.
@@ -80,12 +88,30 @@ func (s *authServer) initCache() *authServer {
 	return s
 }
 
+func (s *authServer) initAudit() *authServer {
+	if s.err != nil {
+		return s
+	}
+
+	if s.auditOpts.Enable {
+		auditor.InitAuditor(s.ctx, s.auditOpts).Start()
+	}
+
+	return s
+}
+
 func (s *authServer) newServer() *authServer {
 	if s.err != nil {
 		return s
 	}
 
-	s.Server, s.err = server.NewServer(s.name)
+	opts := []server.Option{}
+	if s.auditOpts.Enable {
+		sd := shutdown.ShutdownFunc(auditor.GetAuditor().Stop)
+		opts = append(opts, server.WithShutdown(sd))
+	}
+
+	s.Server, s.err = server.NewServer(s.name, opts...)
 	return s
 }
 

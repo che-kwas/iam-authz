@@ -50,7 +50,10 @@ func (l *Loader) startEventLoop() {
 
 	ch := pubsub.Channel()
 	for {
-		for msg := range ch {
+		select {
+		case <-l.ctx.Done():
+			return
+		case msg := <-ch:
 			l.reload(msg.Payload)
 		}
 	}
