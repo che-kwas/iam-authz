@@ -2,4 +2,9 @@
 
 # iam-auth
 
-iam auth server
+IAM auth server.
+
+## TODO
+
+- swagger
+- test
