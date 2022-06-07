@@ -9,7 +9,7 @@ import (
 	"github.com/marmotedu/errors"
 	"github.com/ory/ladon"
 
-	pb "iam-auth/api/apiserver/proto/v1"
+	pb "iam-authz/api/apiserver/proto/v1"
 )
 
 type policies struct {

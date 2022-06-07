@@ -1,4 +1,4 @@
-package authserver
+package authzserver
 
 import (
 	"github.com/che-kwas/iam-kit/code"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/marmotedu/errors"
 
-	"iam-auth/internal/authserver/controller"
+	"iam-authz/internal/authzserver/controller"
 )
 
 func initRouter(g *gin.Engine) {
@@ -16,7 +16,7 @@ func initRouter(g *gin.Engine) {
 	v1 := g.Group("/v1")
 	{
 		authController := controller.NewAuthController()
-		v1.POST("/auth", authController.Authorize)
+		v1.POST("/authz", authController.Authorize)
 	}
 }
 

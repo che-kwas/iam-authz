@@ -1,8 +1,8 @@
-[![CI](https://github.com/che-kwas/iam-auth/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/che-kwas/iam-auth/actions/workflows/ci.yaml)
+[![CI](https://github.com/che-kwas/iam-authz/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/che-kwas/iam-authz/actions/workflows/ci.yaml)
 
-# iam-auth
+# iam-authz
 
-IAM auth server.
+IAM authorization server.
 
 ## TODO
 

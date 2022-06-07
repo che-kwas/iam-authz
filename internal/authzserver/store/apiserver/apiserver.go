@@ -1,17 +1,17 @@
 // Package apiserver is the proxy of iam-apiserver
-// which implements `iam-auth/internal/authserver/store.Store` interface.
+// which implements `iam-authz/internal/authzserver/store.Store` interface.
 package apiserver
 
 import (
 	"sync"
 
-	pb "iam-auth/api/apiserver/proto/v1"
+	pb "iam-authz/api/apiserver/proto/v1"
 
 	"github.com/marmotedu/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"iam-auth/internal/authserver/store"
+	"iam-authz/internal/authzserver/store"
 )
 
 type datastore struct {

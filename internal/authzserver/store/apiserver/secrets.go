@@ -7,7 +7,7 @@ import (
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/marmotedu/errors"
 
-	pb "iam-auth/api/apiserver/proto/v1"
+	pb "iam-authz/api/apiserver/proto/v1"
 )
 
 type secrets struct {

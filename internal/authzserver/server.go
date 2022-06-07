@@ -1,4 +1,4 @@
-package authserver
+package authzserver
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"github.com/che-kwas/iam-kit/shutdown"
 	"github.com/spf13/viper"
 
-	"iam-auth/internal/authserver/auditor"
-	"iam-auth/internal/authserver/cache"
-	"iam-auth/internal/authserver/store"
-	"iam-auth/internal/authserver/store/apiserver"
+	"iam-authz/internal/authzserver/auditor"
+	"iam-authz/internal/authzserver/cache"
+	"iam-authz/internal/authzserver/store"
+	"iam-authz/internal/authzserver/store/apiserver"
 )
 
 type authServer struct {

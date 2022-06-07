@@ -8,8 +8,8 @@ import (
 	"github.com/marmotedu/errors"
 	"github.com/ory/ladon"
 
-	pb "iam-auth/api/apiserver/proto/v1"
-	"iam-auth/internal/authserver/store"
+	pb "iam-authz/api/apiserver/proto/v1"
+	"iam-authz/internal/authzserver/store"
 )
 
 // Cache stores the secrets and policies.

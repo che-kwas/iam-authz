@@ -10,11 +10,11 @@ import (
 	"github.com/che-kwas/iam-kit/logger"
 	"gopkg.in/vmihailenco/msgpack.v2"
 
-	"iam-auth/internal/pkg/redis"
+	"iam-authz/internal/pkg/redis"
 )
 
 const (
-	queueName       = "iam-auth-audit"
+	queueName       = "iam-authz-audit"
 	queueExpiration = time.Duration(24 * time.Hour)
 )
 

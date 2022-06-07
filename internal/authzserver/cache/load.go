@@ -5,7 +5,7 @@ import (
 
 	"github.com/che-kwas/iam-kit/logger"
 
-	"iam-auth/internal/pkg/redis"
+	"iam-authz/internal/pkg/redis"
 )
 
 // Redis pub/sub events.

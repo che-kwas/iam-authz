@@ -9,7 +9,7 @@ import (
 	"github.com/marmotedu/errors"
 	"github.com/ory/ladon"
 
-	"iam-auth/internal/authserver/service"
+	"iam-authz/internal/authzserver/service"
 )
 
 // AuthController handles requests for authorization.

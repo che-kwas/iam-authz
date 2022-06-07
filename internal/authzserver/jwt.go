@@ -1,10 +1,10 @@
-package authserver
+package authzserver
 
 import (
 	"github.com/che-kwas/iam-kit/middleware"
 	"github.com/che-kwas/iam-kit/middleware/auth"
 
-	"iam-auth/internal/authserver/cache"
+	"iam-authz/internal/authzserver/cache"
 )
 
 func newJWTExAuth() middleware.AuthStrategy {

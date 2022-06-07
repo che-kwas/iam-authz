@@ -1,4 +1,4 @@
-// iam-auth is responsible for serving the ladon authorization request.
+// iam-authz is responsible for serving the ladon authorization request.
 package main
 
 import (
@@ -8,11 +8,11 @@ import (
 	"github.com/che-kwas/iam-kit/config"
 	"github.com/spf13/pflag"
 
-	"iam-auth/internal/authserver"
+	"iam-authz/internal/authzserver"
 )
 
 var (
-	name = "iam-auth"
+	name = "iam-authz"
 	cfg  = pflag.StringP("config", "c", "", "config file")
 	help = pflag.BoolP("help", "h", false, "show help message")
 )
@@ -31,5 +31,5 @@ func main() {
 		panic(err)
 	}
 
-	authserver.NewServer(name).Run()
+	authzserver.NewServer(name).Run()
 }

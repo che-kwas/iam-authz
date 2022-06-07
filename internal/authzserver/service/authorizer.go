@@ -4,7 +4,7 @@ package service
 import (
 	"github.com/ory/ladon"
 
-	v1 "iam-auth/api/authserver/v1"
+	v1 "iam-authz/api/authzserver/v1"
 )
 
 // Authorizer implements the authorize interface.

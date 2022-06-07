@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"iam-auth/internal/authserver/auditor"
+	"iam-authz/internal/authzserver/auditor"
 	"strings"
 	"time"
 

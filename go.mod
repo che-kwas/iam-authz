@@ -1,4 +1,4 @@
-module iam-auth
+module iam-authz
 
 go 1.17
 

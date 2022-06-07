@@ -1,7 +1,7 @@
-// Package store defines the storage interface for authserver.
+// Package store defines the storage interface for authzserver.
 package store
 
-//go:generate mockgen -self_package=iam-auth/internal/authserver/store -destination mock_store.go -package store iam-auth/internal/authserver/store Factory,SecretStore,PolicyStore
+//go:generate mockgen -self_package=iam-authz/internal/authzserver/store -destination mock_store.go -package store iam-authz/internal/authzserver/store Factory,SecretStore,PolicyStore
 
 var client Store
 
