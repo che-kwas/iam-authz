@@ -44,11 +44,11 @@ func (p *policies) List() (map[string][]*ladon.DefaultPolicy, error) {
 	}
 
 	total := len(resp.Items)
-	p.log.Infof("policies found %d total", total)
+	p.log.Debugf("policies found %d total", total)
 
 	pols := make(map[string][]*ladon.DefaultPolicy)
 	for _, v := range resp.Items {
-		p.log.Infof(" - %s:%s", v.Username, v.Name)
+		p.log.Debugf(" - %s:%s", v.Username, v.Name)
 		var policy ladon.DefaultPolicy
 
 		if err := json.Unmarshal([]byte(v.PolicyShadow), &policy); err != nil {

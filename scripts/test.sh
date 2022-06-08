@@ -51,7 +51,7 @@ test::authz()
   # 6. 调用/v1/authz完成资源授权
   echo -e '\033[32m6. authz granted\033[0m'
   $CCURL "${Header}" -H"Authorization: Bearer ${authzToken}" http://${AUTHZSERVER_ADDR}/v1/authz \
-    -d'{"subject":"users:maria","action":"delete","resource":"resources:articles:ladon-introduction","context":{"remoteIPAddress":"192.168.0.5"}}'
+    -d'{"subject":"users:maria","action":"delete","resource":"resources:articles:ladon-introduction","context":{"remoteIPAddress":"192.168.0.5"}}'; echo
 
   echo -e '\033[32m/v1/auth test end==========\033[0m'
 }

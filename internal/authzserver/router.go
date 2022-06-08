@@ -11,7 +11,8 @@ import (
 
 func initRouter(g *gin.Engine) {
 	auth := newJWTExAuth()
-	g.NoRoute(auth.AuthFunc(), notFound())
+	g.Use(auth.AuthFunc())
+	g.NoRoute(notFound())
 
 	v1 := g.Group("/v1")
 	{
