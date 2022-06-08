@@ -23,14 +23,16 @@ test::authz()
 
   token="-HAuthorization: Bearer $(test::admin_login)"
 
-  # 1. 如果有 authzpolicy 先清空
-  echo -e '\033[32m1. delete authzpolicy\033[0m'
-  ${DCURL} "${token}" http://${APISERVER_ADDR}/v1/policies/authzpolicy; echo
+  # 1. 如果有 policies 先清空
+  echo -e '\033[32m1. delete policies\033[0m'
+  ${DCURL} "${token}" http://${APISERVER_ADDR}/v1/policies/name=authzpolicy1&name=authzpolicy2; echo
 
-  # 2. 创建 authzpolicy
-  echo -e '\033[32m2. create authzpolicy\033[0m'
+  # 2. 创建 policies
+  echo -e '\033[32m2. create policies\033[0m'
   ${CCURL} "${Header}" "${token}" http://${APISERVER_ADDR}/v1/policies \
-    -d'{"metadata":{"name":"authzpolicy"},"policy":{"description":"One policy to rule them all.","subjects":["users:<peter|ken>","users:maria","groups:admins"],"actions":["delete","<create|update>"],"effect":"allow","resources":["resources:articles:<.*>","resources:printer"],"conditions":{"remoteIPAddress":{"type":"CIDRCondition","options":{"cidr":"192.168.0.1/16"}}}}}'; echo
+    -d'{"metadata":{"name":"authzpolicy1"},"policy":{"description":"One policy to rule them all.","subjects":["users:<peter|ken>","users:maria","groups:admins"],"actions":["delete","<create|update>"],"effect":"allow","resources":["resources:articles:<.*>","resources:printer"],"conditions":{"remoteIPAddress":{"type":"CIDRCondition","options":{"cidr":"192.168.0.1/16"}}}}}'; echo
+  ${CCURL} "${Header}" "${token}" http://${APISERVER_ADDR}/v1/policies \
+    -d'{"metadata":{"name":"authzpolicy2"},"policy":{"description":"Deny peter delete","subjects":["users:peter"],"actions":["delete"],"effect":"deny","resources":["resources:articles:<.*>","resources:printer"],"conditions":{"remoteIPAddress":{"type":"CIDRCondition","options":{"cidr":"192.168.0.1/16"}}}}}'; echo
 
   # 3. 如果有 authzsecret 先清空
   echo -e '\033[32m3. delete authzsecret\033[0m'
@@ -48,10 +50,20 @@ test::authz()
   # 注意这里要sleep 2s 等待 iam-authz 将新建的密钥同步到其内存中
   sleep 2
 
-  # 6. 调用/v1/authz完成资源授权
+  # 6. 测试授权通过
   echo -e '\033[32m6. authz granted\033[0m'
   $CCURL "${Header}" -H"Authorization: Bearer ${authzToken}" http://${AUTHZSERVER_ADDR}/v1/authz \
     -d'{"subject":"users:maria","action":"delete","resource":"resources:articles:ladon-introduction","context":{"remoteIPAddress":"192.168.0.5"}}'; echo
+
+  # 7. 测试授权未通过 - 禁止peter delete
+  echo -e '\033[32m7. authz rejected by authzpolicy2\033[0m'
+  $CCURL "${Header}" -H"Authorization: Bearer ${authzToken}" http://${AUTHZSERVER_ADDR}/v1/authz \
+    -d'{"subject":"users:peter","action":"delete","resource":"resources:articles:ladon-introduction","context":{"remoteIPAddress":"192.168.0.5"}}'; echo
+
+  # 8. 测试授权未通过 - 没有对应的策略（CIDR不符合condition）
+  echo -e '\033[32m8. authz rejected by no policy\033[0m'
+  $CCURL "${Header}" -H"Authorization: Bearer ${authzToken}" http://${AUTHZSERVER_ADDR}/v1/authz \
+    -d'{"subject":"users:maria","action":"delete","resource":"resources:articles:ladon-introduction","context":{"remoteIPAddress":"10.17.0.5"}}'; echo
 
   echo -e '\033[32m/v1/auth test end==========\033[0m'
 }

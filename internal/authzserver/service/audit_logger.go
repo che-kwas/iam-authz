@@ -27,19 +27,18 @@ func NewAuditLogger() *AuditLogger {
 
 // LogRejectedAccessRequest write rejected subject access to log.
 func (a *AuditLogger) LogRejectedAccessRequest(r *ladon.Request, p ladon.Policies, d ladon.Policies) {
-	a.log.Debugw("access request rejected", "request", r, "deciders", d)
-
 	var conclusion string
 	if len(d) > 1 {
 		allowed := joinPoliciesNames(d[0 : len(d)-1])
 		denied := d[len(d)-1].GetID()
-		conclusion = fmt.Sprintf("policies %s allow access, but policy %s forcefully denied it", allowed, denied)
+		conclusion = fmt.Sprintf("policies [%s] allowed access, but policy [%s] forcefully denied it", allowed, denied)
 	} else if len(d) == 1 {
 		denied := d[len(d)-1].GetID()
-		conclusion = fmt.Sprintf("policy %s forcefully denied the access", denied)
+		conclusion = fmt.Sprintf("policy [%s] forcefully denied the access", denied)
 	} else {
 		conclusion = "no policy allowed access"
 	}
+	a.log.Debugw("access request rejected", "conclusion", conclusion)
 
 	rstring, pstring, dstring := convertToString(r, p, d)
 	record := auditor.AuditRecord{
@@ -57,9 +56,9 @@ func (a *AuditLogger) LogRejectedAccessRequest(r *ladon.Request, p ladon.Policie
 
 // LogGrantedAccessRequest write granted subject access to log.
 func (a *AuditLogger) LogGrantedAccessRequest(r *ladon.Request, p ladon.Policies, d ladon.Policies) {
-	a.log.Debugw("access request granted", "request", r, "deciders", d)
+	conclusion := fmt.Sprintf("policies [%s] allowed access", joinPoliciesNames(d))
+	a.log.Debugw("access request granted", "conclusion", conclusion)
 
-	conclusion := fmt.Sprintf("policies %s allow access", joinPoliciesNames(d))
 	rstring, pstring, dstring := convertToString(r, p, d)
 	record := auditor.AuditRecord{
 		TimeStamp:  time.Now().Unix(),
