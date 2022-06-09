@@ -50,6 +50,12 @@ cover: test
 build:
 	go build -ldflags "$(GO_LDFLAGS)" -o $(OUTPUT_DIR)/ ./...
 
+## update: Update all modules.
+.PHONY: update
+update:
+	go get -u ./...
+	go mod tidy -compat=1.17
+
 ## clean: Remove all files that are created by building.
 .PHONY: clean
 clean:
