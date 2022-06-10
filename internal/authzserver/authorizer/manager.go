@@ -1,4 +1,4 @@
-package service
+package authorizer
 
 import (
 	"github.com/ory/ladon"

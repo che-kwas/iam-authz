@@ -1,5 +1,5 @@
-// Package service defines the core business logic.
-package service
+// Package authorizer defines the core business logic.
+package authorizer
 
 import (
 	"github.com/ory/ladon"

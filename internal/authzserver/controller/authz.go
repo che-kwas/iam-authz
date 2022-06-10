@@ -9,19 +9,19 @@ import (
 	"github.com/marmotedu/errors"
 	"github.com/ory/ladon"
 
-	"iam-authz/internal/authzserver/service"
+	"iam-authz/internal/authzserver/authorizer"
 )
 
 // AuthController handles requests for authorization.
 type AuthController struct {
-	srv service.Authorizer
+	srv authorizer.Authorizer
 	log *logger.Logger
 }
 
 // NewAuthController creates a auth controller.
 func NewAuthController() *AuthController {
 	return &AuthController{
-		srv: *service.NewAuthorizer(),
+		srv: *authorizer.NewAuthorizer(),
 		log: logger.L(),
 	}
 }
