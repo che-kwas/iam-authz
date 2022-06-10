@@ -9,3 +9,4 @@ IAM authorization server.
 - swagger
 - test
 - kafka
+- ci

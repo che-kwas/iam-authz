@@ -18,7 +18,6 @@ include make-rules/tools.mk
 
 ## all: Build all.
 .PHONY: all
-# all: lint gen test build
 all: lint test build
 
 ## lint: Check syntax and styling of go sources.
@@ -26,12 +25,6 @@ all: lint test build
 lint: tools.verify.golangci-lint
 	go mod tidy -compat=1.17
 	golangci-lint run ./...
-
-## gen: Generate error code and document.
-.PHONY: gen
-gen: tools.verify.codegen
-	codegen ./internal/pkg/code
-	codegen -doc -output ./docs/error_code.md ./internal/pkg/code
 
 ## test: Run unit test.
 .PHONY: test
