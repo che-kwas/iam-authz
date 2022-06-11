@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/che-kwas/iam-kit/logger"
-	"gopkg.in/vmihailenco/msgpack.v2"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"iam-authz/internal/pkg/redis"
 )
@@ -20,14 +20,14 @@ const (
 
 // AuditRecord defines the details of a authorization request.
 type AuditRecord struct {
-	TimeStamp  int64     `json:"timestamp"`
-	Username   string    `json:"username"`
-	Effect     string    `json:"effect"`
-	Conclusion string    `json:"conclusion"`
-	Request    string    `json:"request"`
-	Policies   string    `json:"policies"`
-	Deciders   string    `json:"deciders"`
-	ExpireAt   time.Time `json:"expireAt"`
+	Timestamp  int64
+	Username   string
+	Effect     string
+	Conclusion string
+	Request    string
+	Policies   string
+	Deciders   string
+	ExpireAt   time.Time
 }
 
 // Auditor defines the structure of an auditor.

@@ -42,7 +42,7 @@ func (a *AuditLogger) LogRejectedAccessRequest(r *ladon.Request, p ladon.Policie
 
 	rstring, pstring, dstring := convertToString(r, p, d)
 	record := auditor.AuditRecord{
-		TimeStamp:  time.Now().Unix(),
+		Timestamp:  time.Now().Unix(),
 		Username:   r.Context["username"].(string),
 		Effect:     ladon.DenyAccess,
 		Conclusion: conclusion,
@@ -61,7 +61,7 @@ func (a *AuditLogger) LogGrantedAccessRequest(r *ladon.Request, p ladon.Policies
 
 	rstring, pstring, dstring := convertToString(r, p, d)
 	record := auditor.AuditRecord{
-		TimeStamp:  time.Now().Unix(),
+		Timestamp:  time.Now().Unix(),
 		Username:   r.Context["username"].(string),
 		Effect:     ladon.AllowAccess,
 		Conclusion: conclusion,
