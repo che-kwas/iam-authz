@@ -36,6 +36,7 @@ type Auditor struct {
 	poolSize         int
 	workerBufferSize int
 	flushInterval    time.Duration
+	omitDetails      bool
 	shouldStop       uint32
 	ctx              context.Context
 	poolWg           sync.WaitGroup
@@ -57,6 +58,7 @@ func InitAuditor(ctx context.Context, opts *AuditorOptions) *Auditor {
 		poolSize:         opts.PoolSize,
 		workerBufferSize: workerBufferSize,
 		flushInterval:    opts.FlushInterval,
+		omitDetails:      opts.OmitDetails,
 		ctx:              ctx,
 		log:              log,
 	}
@@ -116,13 +118,7 @@ func (a *Auditor) startWorker() {
 				a.flushBuffer(buffer)
 				return
 			}
-
-			encoded, _ := msgpack.Marshal(record)
-			buffer = append(buffer, encoded)
-
-			if len(buffer) == a.workerBufferSize {
-				buffer = a.flushBuffer(buffer)
-			}
+			buffer = a.appendBuffer(buffer, record)
 
 		case <-ticker.C:
 			buffer = a.flushBuffer(buffer)
@@ -132,7 +128,6 @@ func (a *Auditor) startWorker() {
 			return
 
 		}
-
 	}
 }
 
@@ -152,4 +147,20 @@ func (a *Auditor) flushBuffer(buffer [][]byte) [][]byte {
 	}
 
 	return buffer[:0]
+}
+
+func (a *Auditor) appendBuffer(buffer [][]byte, record *AuditRecord) [][]byte {
+	if a.omitDetails {
+		record.Policies = ""
+		record.Deciders = ""
+	}
+
+	encoded, _ := msgpack.Marshal(record)
+	buffer = append(buffer, encoded)
+
+	if len(buffer) == a.workerBufferSize {
+		buffer = a.flushBuffer(buffer)
+	}
+
+	return buffer
 }
