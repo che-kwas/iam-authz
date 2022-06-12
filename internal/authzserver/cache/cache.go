@@ -108,7 +108,7 @@ func (c *Cache) ReloadSecrets() error {
 
 	secrets, err := store.Client().Secrets().List()
 	if err != nil {
-		return errors.Wrap(err, "failed to list secrets")
+		return err
 	}
 
 	c.secrets.Clear()
@@ -126,7 +126,7 @@ func (c *Cache) ReloadPolicies() error {
 
 	policies, err := store.Client().Policies().List()
 	if err != nil {
-		return errors.Wrap(err, "failed to list policies")
+		return err
 	}
 
 	c.policies.Clear()

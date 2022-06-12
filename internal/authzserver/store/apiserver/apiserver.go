@@ -8,6 +8,7 @@ import (
 	pb "iam-authz/api/apiserver/proto/v1"
 
 	"github.com/marmotedu/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -37,25 +38,34 @@ var (
 )
 
 // APIServerStore returns a apiserver store instance.
-func APIServerStore(address string) (store.Store, error) {
+func APIServerStore(opts *APIServerOptions) (store.Store, error) {
 	if apiserverStore != nil {
 		return apiserverStore, nil
 	}
 
+	var conn *grpc.ClientConn
 	var err error
 	once.Do(func() {
-		var conn *grpc.ClientConn
-		conn, err = grpc.Dial(address, grpc.WithBlock(), grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err == nil {
-			apiserverStore = &datastore{
-				cli:  pb.NewCacheClient(conn),
-				conn: conn,
-			}
+		ctx, cancel := context.WithTimeout(context.Background(), opts.Timeout)
+		defer cancel()
+
+		dialOpts := []grpc.DialOption{
+			grpc.WithBlock(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		}
+
+		conn, err = grpc.DialContext(ctx, opts.Addr, dialOpts...)
+		if err == ctx.Err() {
+			err = errors.Wrap(err, "connect to apiserver timeout")
 		}
 	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to connect to apiserver")
+
+	if err == nil {
+		apiserverStore = &datastore{
+			cli:  pb.NewCacheClient(conn),
+			conn: conn,
+		}
 	}
 
-	return apiserverStore, nil
+	return apiserverStore, err
 }

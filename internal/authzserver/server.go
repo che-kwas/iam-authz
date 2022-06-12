@@ -16,11 +16,11 @@ import (
 
 type authServer struct {
 	*server.Server
-	name      string
-	ctx       context.Context
-	cancel    context.CancelFunc
-	auditOpts *auditor.AuditorOptions
-	log       *logger.Logger
+	name        string
+	enableAudit bool
+	ctx         context.Context
+	cancel      context.CancelFunc
+	log         *logger.Logger
 
 	err error
 }
@@ -30,11 +30,10 @@ func NewServer(name string) *authServer {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	s := &authServer{
-		name:      name,
-		ctx:       ctx,
-		cancel:    cancel,
-		auditOpts: auditor.NewAuditorOptions(),
-		log:       logger.L(),
+		name:   name,
+		ctx:    ctx,
+		cancel: cancel,
+		log:    logger.L(),
 	}
 
 	return s.initStore().
@@ -46,9 +45,11 @@ func NewServer(name string) *authServer {
 
 // Run runs the authServer.
 func (s *authServer) Run() {
-	defer s.log.Sync()
-	defer store.Client().Close()
 	defer s.cancel()
+	defer s.log.Sync()
+	if cli := store.Client(); cli != nil {
+		defer cli.Close()
+	}
 
 	if s.err != nil {
 		s.log.Fatal("failed to build the server: ", s.err)
@@ -66,7 +67,8 @@ func (s *authServer) initStore() *authServer {
 	}
 
 	var storeIns store.Store
-	if storeIns, s.err = apiserver.APIServerStore(addr); s.err != nil {
+	opts := apiserver.NewAPIServerOptions()
+	if storeIns, s.err = apiserver.APIServerStore(opts); s.err != nil {
 		return s
 	}
 	store.SetClient(storeIns)
@@ -93,8 +95,11 @@ func (s *authServer) initAudit() *authServer {
 		return s
 	}
 
-	if s.auditOpts.Enable {
-		auditor.InitAuditor(s.ctx, s.auditOpts).Start()
+	opts := auditor.NewAuditorOptions()
+	s.enableAudit = opts.Enable
+
+	if opts.Enable {
+		auditor.InitAuditor(s.ctx, opts).Start()
 	}
 
 	return s
@@ -106,7 +111,7 @@ func (s *authServer) newServer() *authServer {
 	}
 
 	opts := []server.Option{}
-	if s.auditOpts.Enable {
+	if s.enableAudit {
 		sd := shutdown.ShutdownFunc(auditor.GetAuditor().Stop)
 		opts = append(opts, server.WithShutdown(sd))
 	}
