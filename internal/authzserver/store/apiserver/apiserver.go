@@ -4,7 +4,6 @@ package apiserver
 
 import (
 	"errors"
-	"sync"
 
 	pb "iam-authz/api/apiserver/proto/v1"
 
@@ -32,40 +31,26 @@ func (ds *datastore) Close() error {
 	return ds.conn.Close()
 }
 
-var (
-	apiserverStore store.Store
-	once           sync.Once
-)
+// NewAPIServerStore returns a apiserver store instance.
+func NewAPIServerStore(opts *APIServerOptions) (store.Store, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), opts.Timeout)
+	defer cancel()
 
-// APIServerStore returns a apiserver store instance.
-func APIServerStore(opts *APIServerOptions) (store.Store, error) {
-	if apiserverStore != nil {
-		return apiserverStore, nil
+	dialOpts := []grpc.DialOption{
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	var conn *grpc.ClientConn
-	var err error
-	once.Do(func() {
-		ctx, cancel := context.WithTimeout(context.Background(), opts.Timeout)
-		defer cancel()
-
-		dialOpts := []grpc.DialOption{
-			grpc.WithBlock(),
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		}
-
-		conn, err = grpc.DialContext(ctx, opts.Addr, dialOpts...)
+	conn, err := grpc.DialContext(ctx, opts.Addr, dialOpts...)
+	if err != nil {
 		if err == ctx.Err() {
 			err = errors.New("connect to apiserver timeout")
 		}
-	})
-
-	if err == nil {
-		apiserverStore = &datastore{
-			cli:  pb.NewCacheClient(conn),
-			conn: conn,
-		}
+		return nil, err
 	}
 
-	return apiserverStore, err
+	return &datastore{
+		cli:  pb.NewCacheClient(conn),
+		conn: conn,
+	}, nil
 }

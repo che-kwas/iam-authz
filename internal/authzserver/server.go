@@ -68,7 +68,7 @@ func (s *authServer) initStore() *authServer {
 
 	var storeIns store.Store
 	opts := apiserver.NewAPIServerOptions()
-	if storeIns, s.err = apiserver.APIServerStore(opts); s.err != nil {
+	if storeIns, s.err = apiserver.NewAPIServerStore(opts); s.err != nil {
 		return s
 	}
 	store.SetClient(storeIns)
