@@ -3,11 +3,11 @@
 package apiserver
 
 import (
+	"errors"
 	"sync"
 
 	pb "iam-authz/api/apiserver/proto/v1"
 
-	"github.com/marmotedu/errors"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -56,7 +56,7 @@ func APIServerStore(opts *APIServerOptions) (store.Store, error) {
 
 		conn, err = grpc.DialContext(ctx, opts.Addr, dialOpts...)
 		if err == ctx.Err() {
-			err = errors.Wrap(err, "connect to apiserver timeout")
+			err = errors.New("connect to apiserver timeout")
 		}
 	})
 
