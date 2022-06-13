@@ -45,18 +45,16 @@ func NewServer(name string) *authServer {
 
 // Run runs the authServer.
 func (s *authServer) Run() {
+	if s.err != nil {
+		s.log.Fatal(s.err)
+	}
+
 	defer s.cancel()
 	defer s.log.Sync()
-	if cli := store.Client(); cli != nil {
-		defer cli.Close()
-	}
-
-	if s.err != nil {
-		s.log.Fatal("failed to build the server: ", s.err)
-	}
+	defer store.Client().Close()
 
 	if err := s.Server.Run(); err != nil {
-		s.log.Fatal("server stopped unexpectedly: ", err)
+		s.log.Fatal(err)
 	}
 }
 
@@ -66,12 +64,12 @@ func (s *authServer) initStore() *authServer {
 		return s
 	}
 
-	var storeIns store.Store
+	var cli store.Store
 	opts := apiserver.NewAPIServerOptions()
-	if storeIns, s.err = apiserver.NewAPIServerStore(opts); s.err != nil {
+	if cli, s.err = apiserver.NewAPIServerStore(opts); s.err != nil {
 		return s
 	}
-	store.SetClient(storeIns)
+	store.SetClient(cli)
 
 	return s
 }
