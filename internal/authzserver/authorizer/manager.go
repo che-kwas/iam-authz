@@ -15,8 +15,7 @@ var _ ladon.Manager = &PolicyManager{}
 
 // NewPolicyManager creates a ladon.Manager with the cache storage.
 func NewPolicyManager() ladon.Manager {
-	cacheIns, _ := cache.CacheIns()
-	return &PolicyManager{cache: cacheIns}
+	return &PolicyManager{cache: cache.CacheIns()}
 }
 
 // Create persists the policy.

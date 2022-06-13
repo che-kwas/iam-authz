@@ -12,12 +12,7 @@ func newJWTExAuth() middleware.AuthStrategy {
 }
 
 func secretGetter(kid string) (auth.Secret, error) {
-	cli, err := cache.CacheIns()
-	if err != nil {
-		return auth.Secret{}, err
-	}
-
-	secret, err := cli.GetSecret(kid)
+	secret, err := cache.CacheIns().GetSecret(kid)
 	if err != nil {
 		return auth.Secret{}, err
 	}

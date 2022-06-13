@@ -80,7 +80,7 @@ func (s *authServer) initCache() *authServer {
 	}
 
 	var cacheIns cache.Loadable
-	if cacheIns, s.err = cache.CacheIns(); s.err != nil {
+	if cacheIns, s.err = cache.InitCacheIns(); s.err != nil {
 		return s
 	}
 	cache.NewLoader(s.ctx, cacheIns).Start()

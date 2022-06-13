@@ -33,46 +33,42 @@ var (
 	ErrPolicyNotFound = errors.New("policy not found")
 )
 
-var (
-	cacheIns *Cache
-	once     sync.Once
-)
+var cacheIns *Cache
 
-// CacheIns returns cache instance.
-func CacheIns() (*Cache, error) {
-	if cacheIns != nil {
-		return cacheIns, nil
-	}
-
+// InitCacheIns initilizes the cache instance and returns it.
+func InitCacheIns() (*Cache, error) {
 	var (
 		err         error
 		secretCache *ristretto.Cache
 		policyCache *ristretto.Cache
 	)
 
-	once.Do(func() {
-		c := &ristretto.Config{
-			NumCounters: 1e7,     // number of keys to track frequency of (10M).
-			MaxCost:     1 << 30, // maximum cost of cache (1GB).
-			BufferItems: 64,      // number of keys per Get buffer.
-			Cost:        nil,
-		}
+	c := &ristretto.Config{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+		Cost:        nil,
+	}
 
-		if secretCache, err = ristretto.NewCache(c); err != nil {
-			return
-		}
-		if policyCache, err = ristretto.NewCache(c); err != nil {
-			return
-		}
+	if secretCache, err = ristretto.NewCache(c); err != nil {
+		return nil, err
+	}
+	if policyCache, err = ristretto.NewCache(c); err != nil {
+		return nil, err
+	}
 
-		cacheIns = &Cache{
-			lock:     new(sync.RWMutex),
-			secrets:  secretCache,
-			policies: policyCache,
-		}
-	})
+	cacheIns = &Cache{
+		lock:     new(sync.RWMutex),
+		secrets:  secretCache,
+		policies: policyCache,
+	}
 
 	return cacheIns, err
+}
+
+// CacheIns returns the global cache instance.
+func CacheIns() *Cache {
+	return cacheIns
 }
 
 // GetSecret returns secret detail for the given key.
