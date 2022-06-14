@@ -1,4 +1,4 @@
-// Package auditor is used to store authorization audit data to the queue (redis list).
+// Package auditor is used to store authorization audit data to the queue.
 package auditor
 
 import (
@@ -10,13 +10,10 @@ import (
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/vmihailenco/msgpack/v5"
 
-	"iam-authz/internal/pkg/redis"
+	"iam-authz/internal/authzserver/queue"
 )
 
-const (
-	queueName       = "iam-authz-audit"
-	queueExpiration = time.Duration(24 * time.Hour)
-)
+const queueName = "iam-authz-audit"
 
 // AuditRecord defines the details of a authorization request.
 type AuditRecord struct {
@@ -32,6 +29,7 @@ type AuditRecord struct {
 
 // Auditor defines the structure of an auditor.
 type Auditor struct {
+	que              queue.Queue
 	recordsChan      chan *AuditRecord
 	poolSize         int
 	workerBufferSize int
@@ -46,7 +44,7 @@ type Auditor struct {
 var auditor *Auditor
 
 // InitAuditor initializes the global auditor and returns it.
-func InitAuditor(ctx context.Context, opts *AuditorOptions) *Auditor {
+func InitAuditor(ctx context.Context, opts *AuditorOptions, que queue.Queue) *Auditor {
 	log := logger.L()
 	log.Debugf("building auditor with options: %+v", opts)
 
@@ -54,6 +52,7 @@ func InitAuditor(ctx context.Context, opts *AuditorOptions) *Auditor {
 	recordsChan := make(chan *AuditRecord, opts.BufferSize)
 
 	auditor = &Auditor{
+		que:              que,
 		recordsChan:      recordsChan,
 		poolSize:         opts.PoolSize,
 		workerBufferSize: workerBufferSize,
@@ -94,7 +93,7 @@ func (a *Auditor) Stop(ctx context.Context) error {
 	return nil
 }
 
-// RecordHit stores an AuditRecord in redis.
+// RecordHit stores an AuditRecord in queue.
 func (a *Auditor) RecordHit(r *AuditRecord) {
 	// check if we should stop sending records
 	if atomic.LoadUint32(&a.shouldStop) > 0 {
@@ -136,13 +135,7 @@ func (a *Auditor) flushBuffer(buffer [][]byte) [][]byte {
 		return buffer
 	}
 
-	pipe := redis.Client().Pipeline()
-	for _, record := range buffer {
-		pipe.RPush(a.ctx, queueName, record)
-	}
-	pipe.Expire(a.ctx, queueName, queueExpiration)
-
-	if _, err := pipe.Exec(a.ctx); err != nil {
+	if err := a.que.Push(a.ctx, queueName, buffer); err != nil {
 		a.log.Errorw("record audit error", "error", err.Error())
 	}
 
