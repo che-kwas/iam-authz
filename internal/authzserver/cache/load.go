@@ -5,7 +5,7 @@ import (
 
 	"github.com/che-kwas/iam-kit/logger"
 
-	"iam-authz/internal/pkg/redis"
+	"iam-authz/internal/authzserver/subscriber"
 )
 
 // Redis pub/sub events.
@@ -23,40 +23,27 @@ type Loadable interface {
 
 // Loader is used to do reload.
 type Loader struct {
-	ctx    context.Context
+	sub    subscriber.Subscriber
 	loader Loadable
+	ctx    context.Context
 	log    *logger.Logger
 }
 
-// NewLoader creates a loader with a loaderImpl.
-func NewLoader(ctx context.Context, loaderImpl Loadable) *Loader {
+// NewLoader creates a loader by a subscriber and a loaderImpl.
+func NewLoader(ctx context.Context, sub subscriber.Subscriber, loaderImpl Loadable) *Loader {
 	return &Loader{
-		ctx:    ctx,
+		sub:    sub,
 		loader: loaderImpl,
+		ctx:    ctx,
 		log:    logger.L(),
 	}
 }
 
 // Start starts a reloading loop.
 func (l *Loader) Start() {
-	go l.startEventLoop()
+	go l.sub.PubSubLoop(l.ctx, channel, l.reload)
 
 	l.reloadAll()
-}
-
-func (l *Loader) startEventLoop() {
-	pubsub := redis.Client().Subscribe(l.ctx, channel)
-	defer pubsub.Close()
-
-	ch := pubsub.Channel()
-	for {
-		select {
-		case <-l.ctx.Done():
-			return
-		case msg := <-ch:
-			l.reload(msg.Payload)
-		}
-	}
 }
 
 func (l *Loader) reloadAll() {

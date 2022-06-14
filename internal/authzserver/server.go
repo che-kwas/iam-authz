@@ -12,6 +12,8 @@ import (
 	"iam-authz/internal/authzserver/cache"
 	"iam-authz/internal/authzserver/store"
 	"iam-authz/internal/authzserver/store/apiserver"
+	"iam-authz/internal/authzserver/subscriber"
+	"iam-authz/internal/authzserver/subscriber/redis"
 )
 
 type authServer struct {
@@ -52,6 +54,7 @@ func (s *authServer) Run() {
 	defer s.cancel()
 	defer s.log.Sync()
 	defer store.Client().Close()
+	defer subscriber.Sub().Close()
 
 	if err := s.Server.Run(); err != nil {
 		s.log.Fatal(err)
@@ -79,11 +82,17 @@ func (s *authServer) initCache() *authServer {
 		return s
 	}
 
-	var cacheIns cache.Loadable
-	if cacheIns, s.err = cache.InitCacheIns(); s.err != nil {
+	var sub subscriber.Subscriber
+	if sub, s.err = redis.NewRedisSub(); s.err != nil {
 		return s
 	}
-	cache.NewLoader(s.ctx, cacheIns).Start()
+
+	var loaderImpl cache.Loadable
+	if loaderImpl, s.err = cache.InitCacheIns(); s.err != nil {
+		return s
+	}
+
+	cache.NewLoader(s.ctx, sub, loaderImpl).Start()
 
 	return s
 }
