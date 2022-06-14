@@ -27,7 +27,7 @@ func (ds *datastore) Policies() store.PolicyStore {
 	return newPolicies(ds)
 }
 
-func (ds *datastore) Close() error {
+func (ds *datastore) Close(ctx context.Context) error {
 	return ds.conn.Close()
 }
 

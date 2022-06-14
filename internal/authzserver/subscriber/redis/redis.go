@@ -31,7 +31,7 @@ func (r *redisSub) PubSubLoop(ctx context.Context, channel string, handleFunc fu
 	}
 }
 
-func (r *redisSub) Close() error {
+func (r *redisSub) Close(ctx context.Context) error {
 	r.pubsub.Close()
 	return r.cli.Close()
 }

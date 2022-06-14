@@ -1,6 +1,8 @@
 // Package store defines the Store interface.
 package store
 
+import "context"
+
 //go:generate mockgen -self_package=iam-authz/internal/authzserver/store -destination mock_store.go -package store iam-authz/internal/authzserver/store Store,SecretStore,PolicyStore
 
 var client Store
@@ -9,7 +11,7 @@ var client Store
 type Store interface {
 	Policies() PolicyStore
 	Secrets() SecretStore
-	Close() error
+	Close(ctx context.Context) error
 }
 
 // Client returns the store client.

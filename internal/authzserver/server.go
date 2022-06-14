@@ -55,9 +55,6 @@ func (s *authServer) Run() {
 
 	defer s.cancel()
 	defer s.log.Sync()
-	defer store.Client().Close()
-	defer subscriber.Sub().Close()
-	defer queue.Que().Close()
 
 	if err := s.Server.Run(); err != nil {
 		s.log.Fatal(err)
@@ -127,7 +124,12 @@ func (s *authServer) newServer() *authServer {
 		return s
 	}
 
-	opts := []server.Option{}
+	opts := []server.Option{
+		server.WithShutdown(shutdown.ShutdownFunc(queue.Que().Close)),
+		server.WithShutdown(shutdown.ShutdownFunc(subscriber.Sub().Close)),
+		server.WithShutdown(shutdown.ShutdownFunc(store.Client().Close)),
+	}
+
 	if s.enableAudit {
 		sd := shutdown.ShutdownFunc(auditor.GetAuditor().Stop)
 		opts = append(opts, server.WithShutdown(sd))

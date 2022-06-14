@@ -30,7 +30,7 @@ func (r *redisQueue) PushMany(ctx context.Context, key string, values [][]byte) 
 	return err
 }
 
-func (r *redisQueue) Close() error {
+func (r *redisQueue) Close(ctx context.Context) error {
 	return r.cli.Close()
 }
 

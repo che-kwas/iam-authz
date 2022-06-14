@@ -10,7 +10,7 @@ var sub Subscriber
 // Subscriber defines the behavior of a subscriber.
 type Subscriber interface {
 	PubSubLoop(ctx context.Context, channel string, handleFunc func(string))
-	Close() error
+	Close(ctx context.Context) error
 }
 
 // Sub returns the subscriber instance.
