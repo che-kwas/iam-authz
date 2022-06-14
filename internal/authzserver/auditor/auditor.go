@@ -24,7 +24,6 @@ type AuditRecord struct {
 	Request    string
 	Policies   string
 	Deciders   string
-	ExpireAt   time.Time
 }
 
 // Auditor defines the structure of an auditor.
@@ -135,7 +134,7 @@ func (a *Auditor) flushBuffer(buffer [][]byte) [][]byte {
 		return buffer
 	}
 
-	if err := a.que.Push(a.ctx, queueName, buffer); err != nil {
+	if err := a.que.PushMany(a.ctx, queueName, buffer); err != nil {
 		a.log.Errorw("record audit error", "error", err.Error())
 	}
 

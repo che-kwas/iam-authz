@@ -11,16 +11,16 @@ import (
 )
 
 type redisSub struct {
-	cli redis.UniversalClient
+	cli    redis.UniversalClient
+	pubsub *redis.PubSub
 }
 
 var _ subscriber.Subscriber = &redisSub{}
 
 func (r *redisSub) PubSubLoop(ctx context.Context, channel string, handleFunc func(string)) {
-	pubsub := r.cli.Subscribe(ctx, channel)
-	defer pubsub.Close()
+	r.pubsub = r.cli.Subscribe(ctx, channel)
 
-	ch := pubsub.Channel()
+	ch := r.pubsub.Channel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -32,6 +32,7 @@ func (r *redisSub) PubSubLoop(ctx context.Context, channel string, handleFunc fu
 }
 
 func (r *redisSub) Close() error {
+	r.pubsub.Close()
 	return r.cli.Close()
 }
 
@@ -42,5 +43,5 @@ func NewRedisSub() (subscriber.Subscriber, error) {
 		return nil, err
 	}
 
-	return &redisSub{cli}, nil
+	return &redisSub{cli: cli}, nil
 }

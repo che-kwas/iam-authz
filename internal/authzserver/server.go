@@ -57,6 +57,7 @@ func (s *authServer) Run() {
 	defer s.log.Sync()
 	defer store.Client().Close()
 	defer subscriber.Sub().Close()
+	defer queue.Que().Close()
 
 	if err := s.Server.Run(); err != nil {
 		s.log.Fatal(err)
@@ -88,6 +89,7 @@ func (s *authServer) initCache() *authServer {
 	if sub, s.err = redis.NewRedisSub(); s.err != nil {
 		return s
 	}
+	subscriber.SetSub(sub)
 
 	var loaderImpl cache.Loadable
 	if loaderImpl, s.err = cache.InitCacheIns(); s.err != nil {
@@ -112,6 +114,7 @@ func (s *authServer) initAudit() *authServer {
 		if que, s.err = redque.NewRedisQue(); s.err != nil {
 			return s
 		}
+		queue.SetQue(que)
 
 		auditor.InitAuditor(s.ctx, opts, que).Start()
 	}

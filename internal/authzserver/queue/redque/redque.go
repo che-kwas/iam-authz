@@ -19,7 +19,7 @@ type redisQueue struct {
 
 var _ queue.Queue = &redisQueue{}
 
-func (r *redisQueue) Push(ctx context.Context, key string, values ...interface{}) error {
+func (r *redisQueue) PushMany(ctx context.Context, key string, values [][]byte) error {
 	pipe := r.cli.Pipeline()
 	for _, record := range values {
 		pipe.RPush(ctx, key, record)
