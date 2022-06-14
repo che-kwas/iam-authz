@@ -107,6 +107,7 @@ func (a *Auditor) startWorker() {
 
 	buffer := make([][]byte, 0, a.workerBufferSize)
 	ticker := time.NewTicker(a.flushInterval)
+	defer ticker.Stop()
 
 	for {
 		select {
