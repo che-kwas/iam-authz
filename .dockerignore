@@ -1,0 +1,6 @@
+.github/
+docs/
+scripts/
+.golangci.yaml
+LICENSE
+README.md
