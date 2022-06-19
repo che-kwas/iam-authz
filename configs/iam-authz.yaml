@@ -8,7 +8,7 @@ http:
 
 # store backend
 apiserver:
-  addr: 0.0.0.0:8001 # apiserver grpc地址
+  addr: 127.0.0.1:8001 # apiserver grpc地址
   timeout: 5s # connect timeout, 默认 5s
 
 redis:
