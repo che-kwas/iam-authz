@@ -22,8 +22,9 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/${TZ} /etc/localtime \
       && echo ${TZ} > /etc/timezone \
       && apk del tzdata
 
-COPY --from=build /iam-authz/* /
+COPY --from=build /iam-authz/iam-authz /opt/iam/bin/
+COPY --from=build /iam-authz/iam-authz.yaml /etc/iam/
 
 EXPOSE 8010
-ENTRYPOINT [ "/iam-authz" ]
-CMD [ "-c", "/iam-authz.yaml" ]
+ENTRYPOINT [ "/opt/iam/bin/iam-authz" ]
+CMD [ "-c", "/etc/iam/iam-authz.yaml" ]
