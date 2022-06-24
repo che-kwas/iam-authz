@@ -23,7 +23,7 @@ all: lint test build
 ## lint: Check syntax and styling of go sources.
 .PHONY: lint
 lint: tools.verify.golangci-lint
-	go mod tidy -compat=1.17
+	go mod tidy -compat=1.18
 	golangci-lint run ./...
 
 ## test: Run unit test.
@@ -47,7 +47,7 @@ build:
 .PHONY: update
 update:
 	go get -u ./...
-	go mod tidy -compat=1.17
+	go mod tidy -compat=1.18
 
 ## clean: Remove all files that are created by building.
 .PHONY: clean
