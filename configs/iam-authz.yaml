@@ -20,12 +20,12 @@ redis:
 kafka:
   brokers:
     - "localhost:9092"
+  flush-frequency: 5s # 定时投递，默认 1s
+  flush-messages: 10 # 定量投递，默认 1000
 
 audit:
   enable: true # 是否记录授权审计日志
   pool-size: 10 # 默认 50
-  buffer-size: 100 # 定量投递，默认 2000
-  flush-interval: 10s # 定期投递，默认 1s
   omit-details: true # 是否忽略详细数据，默认 true
 
 # https://pkg.go.dev/go.uber.org/zap#hdr-Configuring_Zap

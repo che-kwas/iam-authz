@@ -11,7 +11,7 @@ import (
 	"iam-authz/internal/authzserver/auditor"
 	"iam-authz/internal/authzserver/cache"
 	"iam-authz/internal/authzserver/queue"
-	"iam-authz/internal/authzserver/queue/redque"
+	"iam-authz/internal/authzserver/queue/kafque"
 	"iam-authz/internal/authzserver/store"
 	"iam-authz/internal/authzserver/store/apiserver"
 	"iam-authz/internal/authzserver/subscriber"
@@ -108,7 +108,7 @@ func (s *authServer) initAudit() *authServer {
 
 	if opts.Enable {
 		var que queue.Queue
-		if que, s.err = redque.NewRedisQue(); s.err != nil {
+		if que, s.err = kafque.NewKafkaQue(); s.err != nil {
 			return s
 		}
 		queue.SetQue(que)

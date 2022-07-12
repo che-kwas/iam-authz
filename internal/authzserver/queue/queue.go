@@ -9,7 +9,7 @@ var que Queue
 
 // Queue defines the behavior of a queue.
 type Queue interface {
-	PushMany(ctx context.Context, key string, values [][]byte) error
+	Push(ctx context.Context, key string, value []byte) error
 	Close(ctx context.Context) error
 }
 
