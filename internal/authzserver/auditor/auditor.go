@@ -5,7 +5,6 @@ import (
 	"context"
 	"sync"
 	"sync/atomic"
-	"time"
 
 	"github.com/che-kwas/iam-kit/logger"
 	"github.com/vmihailenco/msgpack/v5"
@@ -28,16 +27,14 @@ type AuditRecord struct {
 
 // Auditor defines the structure of an auditor.
 type Auditor struct {
-	que              queue.Queue
-	recordsChan      chan *AuditRecord
-	poolSize         int
-	workerBufferSize int
-	flushInterval    time.Duration
-	omitDetails      bool
-	shouldStop       uint32
-	ctx              context.Context
-	poolWg           sync.WaitGroup
-	log              *logger.Logger
+	que         queue.Queue
+	recordsChan chan *AuditRecord
+	poolSize    int
+	omitDetails bool
+	shouldStop  uint32
+	ctx         context.Context
+	poolWg      sync.WaitGroup
+	log         *logger.Logger
 }
 
 var auditor *Auditor
@@ -47,18 +44,13 @@ func InitAuditor(ctx context.Context, opts *AuditorOptions, que queue.Queue) *Au
 	log := logger.L()
 	log.Debugf("building auditor with options: %+v", opts)
 
-	workerBufferSize := opts.BufferSize / opts.PoolSize
-	recordsChan := make(chan *AuditRecord, opts.BufferSize)
-
 	auditor = &Auditor{
-		que:              que,
-		recordsChan:      recordsChan,
-		poolSize:         opts.PoolSize,
-		workerBufferSize: workerBufferSize,
-		flushInterval:    opts.FlushInterval,
-		omitDetails:      opts.OmitDetails,
-		ctx:              ctx,
-		log:              log,
+		que:         que,
+		recordsChan: make(chan *AuditRecord, opts.BufferSize),
+		poolSize:    opts.PoolSize,
+		omitDetails: opts.OmitDetails,
+		ctx:         ctx,
+		log:         log,
 	}
 
 	return auditor
@@ -105,55 +97,31 @@ func (a *Auditor) RecordHit(r *AuditRecord) {
 func (a *Auditor) startWorker() {
 	defer a.poolWg.Done()
 
-	buffer := make([][]byte, 0, a.workerBufferSize)
-	ticker := time.NewTicker(a.flushInterval)
-	defer ticker.Stop()
-
 	for {
 		select {
 		case record, ok := <-a.recordsChan:
 			// channel was closed
 			if !ok {
-				a.flushBuffer(buffer)
 				return
 			}
-			buffer = a.appendBuffer(buffer, record)
-
-		case <-ticker.C:
-			buffer = a.flushBuffer(buffer)
+			a.pushToQueue(record)
 
 		case <-a.ctx.Done():
-			a.flushBuffer(buffer)
 			return
 
 		}
 	}
 }
 
-func (a *Auditor) flushBuffer(buffer [][]byte) [][]byte {
-	if len(buffer) == 0 {
-		return buffer
-	}
-
-	if err := a.que.PushMany(a.ctx, queueName, buffer); err != nil {
-		a.log.Errorw("record audit error", "error", err.Error())
-	}
-
-	return buffer[:0]
-}
-
-func (a *Auditor) appendBuffer(buffer [][]byte, record *AuditRecord) [][]byte {
+func (a *Auditor) pushToQueue(record *AuditRecord) {
 	if a.omitDetails {
 		record.Policies = ""
 		record.Deciders = ""
 	}
 
 	encoded, _ := msgpack.Marshal(record)
-	buffer = append(buffer, encoded)
 
-	if len(buffer) == a.workerBufferSize {
-		buffer = a.flushBuffer(buffer)
+	if err := a.que.Push(a.ctx, queueName, encoded); err != nil {
+		a.log.Errorw("record audit error", "error", err.Error())
 	}
-
-	return buffer
 }

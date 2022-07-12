@@ -25,7 +25,7 @@ kafka:
 
 audit:
   enable: true # 是否记录授权审计日志
-  pool-size: 10 # 默认 50
+  pool-size: 100 # 默认 100
   omit-details: true # 是否忽略详细数据，默认 true
 
 # https://pkg.go.dev/go.uber.org/zap#hdr-Configuring_Zap
