@@ -30,10 +30,9 @@ func NewKafkaProducer() (sarama.AsyncProducer, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.L().Debugf("new kafka instance with options: %+v", opts)
+	logger.L().Debugf("new kafka producer with options: %+v", opts)
 
 	config := sarama.NewConfig()
-	config.Producer.RequiredAcks = sarama.WaitForLocal     // Only wait for the leader to ack
 	config.Producer.Compression = sarama.CompressionSnappy // Compress messages
 	config.Producer.Flush.Frequency = opts.FlushFrequency
 	config.Producer.Flush.Messages = opts.FlushMessages
