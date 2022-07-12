@@ -8,14 +8,18 @@ http:
 
 # store backend
 apiserver:
-  addr: 127.0.0.1:8001 # apiserver grpc地址
+  addr: localhost:8001 # apiserver grpc地址
   timeout: 5s # connect timeout, 默认 5s
 
 redis:
   addrs:
-    - "127.0.0.1:6379" # 1个addr为单节点模式，多个addrs为cluster模式
+    - "localhost:6379"
   password: "774411"
   database: 0
+
+kafka:
+  brokers:
+    - "localhost:9092"
 
 audit:
   enable: true # 是否记录授权审计日志
